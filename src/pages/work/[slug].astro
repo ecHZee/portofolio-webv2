@@ -1,0 +1,44 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ProjectCover from '../../components/ProjectCover.astro';
+import EvidenceFigure from '../../components/EvidenceFigure.astro';
+import { caseStudies, applicationSlides, evidenceGroups, type CaseStudy } from '../../data/case-studies';
+export function getStaticPaths() { return caseStudies.map((study) => ({ params: { slug: study.project.id }, props: { study } })); }
+interface Props { study: CaseStudy; }
+const { study } = Astro.props;
+const project = study.project;
+const groups = evidenceGroups(study);
+const slides = applicationSlides(study);
+const selectedIndexes = project.id === 'tashkiflow' ? [6, 7, 3] : project.id === 'tadabburlens' ? [4, 5, 8] : [1, 2, 14];
+const selected = selectedIndexes.map((index) => slides[index]);
+const remaining = slides.filter((_, index) => !selectedIndexes.includes(index));
+const currentIndex = caseStudies.indexOf(study);
+const nextStudy = caseStudies[(currentIndex + 1) % caseStudies.length];
+---
+<Layout title={`${project.name} — Hanif Zhafran`} description={study.introduction}>
+  <main id="main" class="case-main">
+    <section class="container case-hero" id="top">
+      <a class="back-link" href="/#work">Back to selected work</a>
+      <div class="case-hero-layout"><div class="case-hero-copy"><h1>{project.name}</h1><p class="project-category">{study.category}</p><p class="case-introduction">{study.headline}</p><p>{study.introduction}</p><p class="case-role">{project.role}<br /><span>{project.timeframe}</span></p><a class="button button-primary" href={study.repository} target="_blank" rel="noopener noreferrer">View repository<span class="sr-only"> (opens in a new tab)</span></a></div><div class="case-cover"><ProjectCover study={study} featured /></div></div>
+    </section>
+    <div class="case-navigation-shell"><nav class="container case-navigation" data-section-nav aria-label="Case study sections"><a href="#contribution">Contribution</a><a href="#results">Results</a><a href="#application">Application</a><a href="#evaluation">Evaluation</a>{groups.architecture.length > 0 && <a href="#architecture">Architecture</a>}</nav></div>
+
+    <section class="container case-section contribution-section" id="contribution" aria-labelledby="contribution-title">
+      <div class="case-section-heading"><h2 id="contribution-title">The problem &amp;<br />my contribution</h2><p>{study.problem}</p></div>
+      <div class="contribution-detail"><p class="contribution-summary">{study.contribution}</p><ul class="stack-list" aria-label="Project technologies">{project.stack.map((tech) => <li>{tech}</li>)}</ul><div class="decisions">{study.decisions.map((decision) => <div class="decision"><h3>{decision.title}</h3><p>{decision.description}</p></div>)}</div></div>
+    </section>
+
+    <section class="results-section" id="results" aria-labelledby="results-title"><div class="container"><h2 id="results-title">What the evaluation shows</h2><p class="results-context">{study.resultContext}</p><dl class="metrics-list">{project.metrics.map((metric) => <div><dt>{metric.label}</dt><dd>{metric.value}{metric.note && <p>{metric.note}</p>}</dd></div>)}</dl>{project.limitation && <div class="limitation"><h3>A known limitation</h3><p>{project.limitation}</p></div>}</div></section>
+
+    <section class="container case-section evidence-section" id="application" aria-labelledby="application-title"><h2 id="application-title">Inside the application</h2><p class="section-description">Original screenshots from the {project.name} experience. Open any image for a closer look.</p><div data-gallery>
+      <div class:list={['app-gallery', { 'dashboard-gallery': project.id === 'yoliyo-mentai' }]}>{selected.map((slide) => <EvidenceFigure image={slide.src} caption={slide.caption || project.name} phone={project.primary.kind === 'phone'} />)}</div>
+      <details class="gallery-disclosure"><summary>View the remaining {remaining.length} application screens</summary><div class:list={['app-gallery', { 'dashboard-gallery': project.id === 'yoliyo-mentai' }]}>{remaining.map((slide) => <EvidenceFigure image={slide.src} caption={slide.caption || project.name} phone={project.primary.kind === 'phone'} />)}</div></details>
+    </div></section>
+
+    <section class="container case-section evidence-section" id="evaluation" aria-labelledby="evaluation-title"><h2 id="evaluation-title">Evaluation evidence</h2><p class="section-description">The original figures and testing records behind the reported results.</p><div class="evaluation-gallery" data-gallery>{groups.evaluation.map((item, index) => item.kind !== 'panel' && <EvidenceFigure image={item.src} caption={item.caption} note={study.evaluationNotes[index]} />)}</div></section>
+
+    {groups.architecture.length > 0 && <section class="container case-section evidence-section" id="architecture" aria-labelledby="architecture-title"><h2 id="architecture-title">How the pieces connect</h2><p class="section-description">A brief reading of the workflow, followed by the original implementation evidence.</p><ol class="architecture-flow" aria-label="Workflow overview">{study.architecture.map((step) => <li>{step}</li>)}</ol>{project.id === 'yoliyo-mentai' && <div class="workflow-reading"><h3>Read the workflow, beyond the screenshot</h3><p>The original overview is 535 × 166 pixels. Zoom cannot recover missing detail. These paths are traced from the exported n8n workflow:</p><dl><div><dt>Incoming message</dt><dd>Telegram trigger → operating-hours check → look up or create the user → menu request branch / AI Agent → parse the response.</dd></div><div><dt>Order creation</dt><dd>Check for an existing order → update user information → create_order. Separate branches build order items and request a Midtrans payment link, then save the link and send a success message.</dd></div><div><dt>Payment events</dt><dd>A Midtrans webhook branches through If1 to update payment status. A separate webhook checks for a newly paid order, retrieves user data, records invoice_sent, and sends the invoice.</dd></div></dl><a class="text-link" href="https://github.com/ecHZee/YoLiYo-Mentai/blob/main/n8n/Chatbot_YoLiMenV3.json" target="_blank" rel="noopener noreferrer">Inspect the exported workflow<span class="sr-only"> (opens in a new tab)</span></a></div>}<div class="architecture-gallery" data-gallery>{groups.architecture.map((item, index) => item.kind !== 'panel' && <EvidenceFigure image={item.src} caption={item.caption} note={study.architectureNotes[index]} />)}</div></section>}
+
+    <section class="container next-project"><div><p>Continue exploring</p><h2><a href={`/work/${nextStudy.project.id}/`}>{nextStudy.project.name}</a></h2></div><a class="button button-outline" href={`/work/${nextStudy.project.id}/`}>View case study<span class="sr-only">: {nextStudy.project.name}</span></a></section>
+  </main>
+</Layout>

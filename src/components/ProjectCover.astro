@@ -1,0 +1,11 @@
+---
+import { Image } from 'astro:assets';
+import type { CaseStudy } from '../data/case-studies';
+interface Props { study: CaseStudy; featured?: boolean; }
+const { study, featured = false } = Astro.props;
+const screen = study.project.id === 'yoliyo-mentai';
+---
+<div class:list={['project-cover', { 'cover-featured': featured, 'cover-dashboard': screen }]} style={`view-transition-name: cover-${study.project.id}`}><div class="cover-media">
+  {study.pairedCover && <div class="cover-image secondary-image"><Image src={study.pairedCover} alt="" widths={[240, 320, 400, 640]} sizes="(min-width: 900px) 190px, 34vw" loading="lazy" format="webp" quality={85} /></div>}
+  <div class="cover-image primary-image"><Image src={study.cover} alt={study.coverCaption} widths={screen ? [640, 960, 1440] : [240, 320, 400, 640]} sizes={screen ? '(min-width: 900px) 520px, 90vw' : '(min-width: 900px) 210px, 40vw'} loading="lazy" format="webp" quality={85} /></div>
+</div></div>

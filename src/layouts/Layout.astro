@@ -1,0 +1,32 @@
+---
+import '../styles/global.css';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import EvidenceDialog from '../components/EvidenceDialog.astro';
+import SectionNavigation from '../components/SectionNavigation.astro';
+import { profile } from '../data/portfolio';
+interface Props { title?: string; description?: string; home?: boolean; }
+const { title = 'Hanif Zhafran — AI/ML & Software Engineering', description = 'Selected work by Hanif Muhammad Zhafran Sutisna: Arabic OCR, on-device computer vision, and full-stack automation. Explore projects, evaluation, and original application evidence.', home = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://hanzha-portfolio.vercel.app');
+const shareImage = new URL('/share/portfolio.jpg', canonical.origin);
+const person = { '@context': 'https://schema.org', '@type': 'Person', name: profile.name, url: canonical.origin, sameAs: ['https://github.com/ecHZee', 'https://linkedin.com/in/hanifzhfran/'], alumniOf: { '@type': 'CollegeOrUniversity', name: 'Gunadarma University' }, knowsAbout: ['Computer vision', 'Natural language processing', 'Arabic OCR', 'Software engineering'] };
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#171A18" /><meta name="color-scheme" content="dark" />
+    <title>{title}</title><meta name="description" content={description} /><meta name="author" content={profile.name} />
+    <link rel="canonical" href={canonical} /><link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <meta property="og:type" content="website" /><meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:url" content={canonical} />
+    <meta property="og:image" content={shareImage} /><meta property="og:image:width" content="1200" /><meta property="og:image:height" content="630" /><meta property="og:image:alt" content="Hanif Zhafran — AI/ML and software engineering portfolio" />
+    <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content={title} /><meta name="twitter:description" content={description} /><meta name="twitter:image" content={shareImage} />
+    <script type="application/ld+json" set:html={JSON.stringify(person)} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <SiteHeader home={home} /><slot /><SiteFooter home={home} /><EvidenceDialog /><SectionNavigation />
+  </body>
+</html>

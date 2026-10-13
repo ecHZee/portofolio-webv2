@@ -1,0 +1,31 @@
+---
+import { Image, getImage } from 'astro:assets';
+import input from '../assets/images/tashkiflow/display/preview-perspective-screen.jpeg';
+import output from '../assets/images/tashkiflow/display/result-screen-up.jpeg';
+const fullInput = await getImage({ src: input, width: input.width, format: 'webp', quality: 90 });
+const fullOutput = await getImage({ src: output, width: output.width, format: 'webp', quality: 90 });
+---
+<figure class="research-scene" data-research-scene>
+  <div class="scene-heading"><a href="/work/tashkiflow/">Inside TashkiFlow <span aria-hidden="true">↗</span></a><div class="scene-controls" aria-label="Choose screenshot view" hidden><button type="button" data-scene-view="both" aria-pressed="true">Both</button><button type="button" data-scene-view="input" aria-pressed="false">Input</button><button type="button" data-scene-view="output" aria-pressed="false">Result</button></div></div>
+  <div class="scene-artifacts" data-gallery>
+    <a class="scene-page scene-input" href={fullInput.src} data-view-image data-caption="TashkiFlow: perspective-corrected input" aria-label="Input document: enlarge TashkiFlow screenshot"><Image src={input} alt="An Arabic document in TashkiFlow’s perspective correction screen" widths={[240, 400, 640]} sizes="(min-width: 801px) 155px, 40vw" loading="lazy" format="webp" quality={85} /><span>Input document</span></a>
+    <div class="scene-bridge" aria-label="PaddleOCR and Kraken contribute to hybrid recognition"><svg viewBox="0 0 100 140" aria-hidden="true"><path d="M0 70 H12 V26 H88 V70 H100 M12 70 V114 H88 V70" /></svg><span>PaddleOCR</span><span>Kraken</span></div>
+    <a class="scene-page scene-output" href={fullOutput.src} data-view-image data-caption="TashkiFlow: recognized Arabic, diacritics and transliteration" aria-label="Usable text: enlarge TashkiFlow result screenshot"><Image src={output} alt="Arabic recognition, restored diacritics, and transliteration in the Android result screen" widths={[240, 400, 640]} sizes="(min-width: 801px) 155px, 40vw" loading="lazy" format="webp" quality={85} /><span>Usable text</span></a>
+  </div>
+  <figcaption>Document → hybrid recognition → result.<br /><span>Original project screenshots. Tap to inspect.</span></figcaption>
+</figure>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-research-scene]').forEach((scene) => {
+    scene.querySelector<HTMLElement>('.scene-controls')!.hidden = false;
+    scene.querySelectorAll<HTMLButtonElement>('[data-scene-view]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const view = button.dataset.sceneView!;
+        scene.dataset.view = view;
+        scene.querySelectorAll('[data-scene-view]').forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+        scene.querySelector<HTMLElement>('.scene-input')!.hidden = view === 'output';
+        scene.querySelector<HTMLElement>('.scene-output')!.hidden = view === 'input';
+        scene.querySelector<HTMLElement>('.scene-bridge')!.hidden = view !== 'both';
+      });
+    });
+  });
+</script>

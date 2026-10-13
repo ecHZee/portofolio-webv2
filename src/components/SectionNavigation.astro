@@ -1,0 +1,31 @@
+<script>
+  const groups = Array.from(document.querySelectorAll<HTMLElement>('[data-section-nav]'));
+  groups.forEach((group) => {
+    const links = Array.from(group.querySelectorAll<HTMLAnchorElement>('a[href*="#"]'));
+    const sections = links.map((link) => document.getElementById(link.hash.slice(1))).filter((section): section is HTMLElement => !!section);
+    const visible = new Map<Element, boolean>();
+    // Buffer below the CSS sticky header/TOC, without a startup layout measurement.
+    const mobile = matchMedia('(max-width: 600px)').matches;
+    const offset = group.classList.contains('case-navigation') ? (mobile ? 170 : 180) : (mobile ? 100 : 110);
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => visible.set(entry.target, entry.isIntersecting));
+      // The compact footer can share the observation area with About at the page end.
+      const contact = sections.find((section) => section.id === 'contact' && visible.get(section));
+      const active = contact ?? sections.find((section) => visible.get(section));
+      let nextScrollLeft: number | null = null;
+      if (active && group.classList.contains('case-navigation')) {
+        const link = links.find((item) => item.hash === `#${active.id}`)!;
+        const linkRect = link.getBoundingClientRect(), groupRect = group.getBoundingClientRect();
+        if (linkRect.left < groupRect.left) nextScrollLeft = group.scrollLeft - (groupRect.left - linkRect.left);
+        else if (linkRect.right > groupRect.right) nextScrollLeft = group.scrollLeft + linkRect.right - groupRect.right;
+      }
+      links.forEach((link) => {
+        if (active?.id === link.hash.slice(1)) link.setAttribute('aria-current', 'location');
+        else if (!active && link.pathname !== location.pathname && link.hash === '#work') link.setAttribute('aria-current', 'page');
+        else link.removeAttribute('aria-current');
+      });
+      if (nextScrollLeft !== null) group.scrollLeft = nextScrollLeft;
+    }, { rootMargin: `-${offset}px 0px -45% 0px`, threshold: 0 });
+    sections.forEach((section) => observer.observe(section));
+  });
+</script>

@@ -1,0 +1,13 @@
+---
+import { Image, getImage } from 'astro:assets';
+interface Props { image: ImageMetadata; caption: string; note?: string; phone?: boolean; }
+const { image, caption, note, phone = false } = Astro.props;
+const full = await getImage({ src: image, width: Math.min(image.width, 1800), format: 'webp', quality: 90 });
+---
+<figure class:list={['evidence-figure', { 'phone-figure': phone }]}>
+  <a class="evidence-link" href={full.src} data-view-image data-caption={caption} aria-label={`Enlarge image: ${caption}`}>
+    <div class="evidence-image"><Image src={image} alt={caption} widths={phone ? [240, 400, 640] : [640, 960, 1440]} sizes={phone ? '(min-width: 900px) 240px, (min-width: 600px) 40vw, 80vw' : '(min-width: 900px) 680px, 90vw'} format="webp" quality={85} loading="lazy" /></div>
+    <span class="image-action">Enlarge image</span>
+  </a>
+  <figcaption><strong>{caption}</strong>{note && <p>{note}</p>}</figcaption>
+</figure>

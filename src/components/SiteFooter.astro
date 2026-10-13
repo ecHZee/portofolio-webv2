@@ -1,0 +1,48 @@
+---
+import { profile } from '../data/portfolio';
+interface Props { home?: boolean; }
+const { home = false } = Astro.props;
+const year = new Date().getFullYear();
+---
+<footer class="site-footer" id="contact">
+  <div class="container">
+    <div class="contact-layout">
+      <div class="footer-identity">
+        <p class="footer-signature">© {year} {profile.name}</p>
+        <p>Research × Engineering</p>
+        <p>Open to engineering roles and collaboration.</p>
+        {!home && <a class="footer-link footer-back" href="/#work">Back to selected work <span aria-hidden="true">↗</span></a>}
+      </div>
+      <div class="footer-directory">
+        <div>
+          <h2>Elsewhere</h2>
+          <ul class="footer-links">
+            <li><a class="footer-link" href="https://github.com/ecHZee" target="_blank" rel="noopener noreferrer">GitHub<span class="sr-only"> (opens in a new tab)</span></a></li>
+            <li><a class="footer-link" href="https://linkedin.com/in/hanifzhfran/" target="_blank" rel="noopener noreferrer">LinkedIn<span class="sr-only"> (opens in a new tab)</span></a></li>
+            <li><a class="footer-link" href="mailto:hz.sutisna2042@gmail.com?subject=Resume%20request">Request résumé</a></li>
+          </ul>
+        </div>
+        <div class="footer-contact">
+          <h2>Contact</h2>
+          <a class="footer-link contact-email" href="mailto:hz.sutisna2042@gmail.com"><span>hz.sutisna2042@<wbr />gmail.com</span></a>
+          <button class="footer-link copy-email" type="button" data-copy-email hidden>Copy email</button>
+          <p class="copy-status" role="status" aria-atomic="true" data-copy-status></p>
+        </div>
+      </div>
+    </div>
+    <div class="footer-linework" aria-hidden="true">
+      {Array.from({ length: 25 }, () => <span></span>)}
+    </div>
+  </div>
+</footer>
+<script>
+  const copyButton = document.querySelector<HTMLButtonElement>('[data-copy-email]');
+  const copyStatus = document.querySelector<HTMLElement>('[data-copy-status]');
+  if (copyButton && copyStatus) {
+    copyButton.hidden = false;
+    copyButton.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText('hz.sutisna2042@gmail.com'); copyStatus.textContent = 'Email copied.'; }
+      catch { copyStatus.textContent = 'Copy unavailable. Select the email address to copy it.'; }
+    });
+  }
+</script>

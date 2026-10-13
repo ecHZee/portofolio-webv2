@@ -1,0 +1,9 @@
+---
+interface Props { home?: boolean; }
+const { home = false } = Astro.props;
+const root = home ? '' : '/';
+---
+<header class:list={['site-header', { 'site-header--home': home }]}><nav class="container nav-inner" aria-label="Primary navigation">
+  <a class="wordmark" href={`${root}#top`} aria-label="Hanif Zhafran, home">Hanif Zhafran<span aria-hidden="true">.</span></a>
+  <div class="nav-links" data-section-nav><a href={`${root}#work`} aria-current={!home ? 'page' : undefined}>Work</a><a href={`${root}#about`}>About</a><a href={`${root}#contact`}>Contact</a></div>
+</nav></header>

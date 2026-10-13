@@ -1,0 +1,10 @@
+import sharp from 'sharp';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
+const root = new URL('../', import.meta.url);
+const photo = await sharp(fileURLToPath(new URL('src/assets/portraits/hanif-outdoor.jpg', root))).rotate().resize(320, 500, { fit: 'cover', position: 'centre' }).jpeg({ quality: 88 }).toBuffer();
+const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630"><rect width="1200" height="630" fill="#171A18"/><text x="66" y="180" fill="#F4F1E8" font-family="Arial,sans-serif" font-size="82" font-weight="600">Hanif</text><text x="66" y="275" fill="#A6C3B0" font-family="Arial,sans-serif" font-size="82" font-weight="600">Zhafran.</text><text x="70" y="359" fill="#F4F1E8" font-family="Arial,sans-serif" font-size="30">AI/ML &amp; Software Engineering</text><text x="70" y="412" fill="#BABDB5" font-family="Arial,sans-serif" font-size="23">Computer vision, language, and usable software.</text><text x="70" y="545" fill="#A6C3B0" font-family="Arial,sans-serif" font-size="23">TashkiFlow · TadabburLens · YoLiYo Mentai</text></svg>`;
+await mkdir(new URL('public/share/', root), { recursive: true });
+await sharp(Buffer.from(svg)).composite([{ input: photo, left: 824, top: 64 }]).jpeg({ quality: 88 }).toFile(fileURLToPath(new URL('public/share/portfolio.jpg', root)));
+await writeFile(new URL('public/share/README.txt', root), 'Portfolio share card composed locally from the supplied DSC00437 portrait. The original photo is unchanged. Regenerate with node scripts/generate_share.mjs.\n');
+console.log('Generated public/share/portfolio.jpg (1200x630).');

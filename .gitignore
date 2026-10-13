@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.astro/
+
+# Logs
+*.log
+build_output.log
+
+# Environment / secrets
+.env
+.env.*
+
+# Local analysis scripts
+analyze_*.py
+list_assets.py
+
+# Fallback snapshots (local only)
+.fallbacks/
+
+# Asset intake inbox (not part of deployed site)
+asset-inbox/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+
+# Local redesign notes, browser checks, and legacy reference files
+docs/
+archive/
+DESIGN.md
+PRODUCT.md
+scripts/prepare_assets.py
+
+# Local hosting metadata
+.wrangler/
+.vercel/
